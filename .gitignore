@@ -1,0 +1,41 @@
+.envrc
+
+### Backend ###
+src/main/resources/static
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+.run
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+bin/
+
+#### MACOS ###
+.DS_Store
+
+#### Database files ####
+.java-version
+/postgres-data/
