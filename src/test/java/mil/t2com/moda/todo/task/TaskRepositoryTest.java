@@ -8,7 +8,6 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class TaskRepositoryTest {
@@ -20,17 +19,22 @@ class TaskRepositoryTest {
     void shouldSaveANewTask() {
         // Arrange
         Category newCategory = new Category("important");
-        Task newTask = new Task("Learn TDD", "Remember to use this pattern; Red, green, refactor", false, newCategory);
+        Task newTask = new Task(
+                "Learn TDD",
+                "Remember to use this pattern; Red, green, refactor",
+                false,
+                newCategory
+        );
 
         // Act
         Task savedNewTask = taskRepository.save(newTask);
         Optional<Task> result = taskRepository.findById(savedNewTask.getId());
 
         // Assert
-        assertEquals("Learn tdd", result.get().getTitle());
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isNotNull();
+        assertThat(result.get().getTitle()).isEqualTo("Learn TDD");
         assertThat(result.get().getDescription()).isEqualTo(newTask.getDescription());
-        // Add category value test
-        assertThat(result.get().getCategory().getLabel()).isEqualTo(newTask.getCategory());
-        assertThat(result.get()).isEqualTo(newTask);
+        assertThat(result.get().getCategory().getLabel()).isEqualTo(newTask.getCategory().getLabel());
     }
 }

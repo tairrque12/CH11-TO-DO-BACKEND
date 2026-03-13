@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(CategoryController.class)
 class CategoryControllerTest {
 
     @Autowired
@@ -35,7 +35,7 @@ class CategoryControllerTest {
     @Test
     void shouldSaveNewCategory() throws Exception {
         // Arrange
-        Category newCategory = new Category("normal");
+        Category newCategory = new Category("Normal");
         newCategory.setId(1L);
 
         when(categoryService.saveCategory(any(Category.class))).thenReturn(newCategory);
@@ -44,6 +44,7 @@ class CategoryControllerTest {
         mockMvc.perform(post("/api/v1/category")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newCategory)))
+
                 // result matchers
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.label").value("Normal"));
