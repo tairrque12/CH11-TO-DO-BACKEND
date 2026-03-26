@@ -4,9 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/category")
+@RequestMapping("/api/v1")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -15,20 +16,31 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @PostMapping
+    @PostMapping("/category")
     @ResponseStatus(HttpStatus.CREATED)
     public Category saveNewCategory(@RequestBody Category category) {
         return categoryService.saveCategory(category);
     }
 
-    @GetMapping()
+    @GetMapping(value = "/category")
     public List<Category> getAllCategories() {
-        return null;
+        return categoryService.findAllCategories();
     }
 
-    // ADD with Tests for: GetById, Put, Delete
+//    @GetMapping()
+//    public Optional<Category> findCategoryByLabelUsingRequestParam(@RequestParam String categoryLabel) {
+//        return categoryService.findCategoryByLabel(categoryLabel);
+//    }
 
-    // Example
-    //@GetMapping("/{categoryId}")
+    @GetMapping("/category/{categoryLabel}")
+    public Optional<Category> findCategoryByLabelUsingPathVariable(@PathVariable String categoryLabel) {
+        return categoryService.findCategoryByLabel(categoryLabel);
+    }
 
+    @GetMapping(value = "/category/id/", params = "id")
+    public Optional<Category> findCategoryById(@RequestParam Long id) {
+        return categoryService.findCategoryById(id);
+    }
+
+    // ADD with Tests for:  Put, Delete
 }

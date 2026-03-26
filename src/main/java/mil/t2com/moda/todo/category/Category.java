@@ -23,4 +23,4 @@ public class Category {
 
     public void setLabel(String label) { this.label = label; }
 
-    }
+}

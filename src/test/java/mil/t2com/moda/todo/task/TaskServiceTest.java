@@ -1,16 +1,20 @@
 package mil.t2com.moda.todo.task;
 
 import mil.t2com.moda.todo.category.Category;
+import mil.t2com.moda.todo.category.CategoryService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
@@ -18,33 +22,87 @@ class TaskServiceTest {
     @Mock
     private TaskRepository taskRepository;
 
+    @Mock
+    private CategoryService categoryService;
+
     @InjectMocks
-    private TaskService taskService;
+    TaskService taskService;
+
+    Task learnMock;
+    Task learnTdd;
+    Category started;
+    Category finished;
+
+    List<Task> tasks = new ArrayList<>();
+
+    // Start using when refactoring
+    @BeforeEach
+    void setUp() {
+        started = new Category("started");
+        finished = new Category("finished");
+        // Arrange
+        learnMock = new Task("Learn about Mocks", "Learn about Inject mocks", false, started);
+        learnMock.setId(1L);
+        learnTdd = new Task("Learn TDD", "I learned TDD", true, finished);
+        learnTdd.setId(2l);
+    }
 
     @Test
     void shouldSaveNewTask() {
-        // Arrange
-        Category newCategory = new Category("important");
-        Task newTask = new Task(
-                "Learn about Mocks",
-                "Learn about Inject mocks",
-                false,
-                newCategory
-        );
-        newTask.setId(1L);
-
-        when(taskRepository.save(newTask)).thenReturn(newTask);
-
         // Act
-        Task result = taskService.saveTask(newTask);
+        when(taskRepository.save(learnMock)).thenReturn(learnMock);
+        Task result = taskService.saveTask(learnMock);
 
         // Assert
-        assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("Learn about Mocks");
-        assertThat(result.getDescription()).isEqualTo("Learn about Inject mocks");
-        assertThat(result.getCategory().getLabel()).isEqualTo("important");
+        assertThat(result.getCategory().getLabel()).isEqualTo("started");
 
-        verify(taskRepository, only()).save(newTask);
+        verify(taskRepository, only()).save(learnMock);
+    }
+
+    @Test
+    void shouldSaveNewTaskWithNewCategory() {
+        // Act
+        when(categoryService.findCategoryByLabel(started.getLabel())).thenReturn(Optional.of(started));
+        when(taskRepository.save(learnMock)).thenReturn(learnMock);
+
+        Task result = taskService.saveTask(learnMock);
+
+        verify(categoryService, only()).findCategoryByLabel(started.getLabel());
+    }
+
+    @Test
+    void shouldGetAllTasks() {
+        // Act
+        tasks.addAll(List.of(learnMock, learnTdd));
+        when(taskRepository.findAll()).thenReturn(tasks);
+
+        List<Task> results = taskService.findAllTasks();
+
+        verify(taskRepository, only()).findAll();
+        assertThat(results).isEqualTo(tasks);
+    }
+
+    @Test
+    void shouldFindTaskById() {
+        // Act
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(learnMock));
+
+        Task result = taskService.findTaskById(1L);
+
+        verify(taskRepository, only()).findById(1L);
+        assertThat(result).isEqualTo(learnMock);
+    }
+
+    @Test
+    void shouldSaveAllTasks() {
+        // Act
+        when(taskRepository.saveAll(tasks)).thenReturn(tasks);
+
+        List<Task> result = taskService.saveAllTasks(tasks);
+
+        verify(taskRepository, only()).saveAll(tasks);
+        assertThat(result).isEqualTo(tasks);
     }
 }

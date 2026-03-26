@@ -31,6 +31,15 @@ public class TaskController {
     @GetMapping()
     public List<Task> findAllTasks() { return taskService.findAllTasks(); }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Task> findTaskById(@PathVariable Long id) {
+        try {
+            Task task = taskService.findTaskById(id);
+            return ResponseEntity.ok(task);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
     // ADD with Tests for: GetById, Put, Delete
 
     // Example
